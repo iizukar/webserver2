@@ -1,4 +1,4 @@
-FROM honeygain/honeygain
+FROM honeygain/honeygain:latest
 
 # Switch to root to have permission for installing packages
 USER root
