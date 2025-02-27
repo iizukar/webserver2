@@ -1,17 +1,15 @@
 #!/bin/sh
 
-#
--tou-accept
-
-#terms
-honeygain -tou-get 
+# Start the fake HTTP server in the background
+python3 server.py
 
 # Run Honeygain with your command-line parameters.
 # Replace the placeholder environment variables with your actual Render environment variables.
-honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" 
+honeygain -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" 
+
+sleep 15
 
 #accept
 -tou-accept 
 
-# Start the fake HTTP server in the background
-python3 server.py
+
