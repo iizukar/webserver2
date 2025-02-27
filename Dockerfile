@@ -1,10 +1,7 @@
-# Use the Honeygain image as the base
 FROM honeygain/honeygain
 
-# (Optional) Set default environment variables; these can be overridden on Render
-ENV ACCOUNT_EMAIL=your_email@example.com
-ENV ACCOUNT_PASSWORD=your_password
-ENV DEVICE_NAME=your_device_name
+# Switch to root to have permission for installing packages
+USER root
 
 # Install Python3 for the fake web server (if not already installed)
 RUN apt-get update && apt-get install -y python3
@@ -13,7 +10,7 @@ RUN apt-get update && apt-get install -y python3
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Expose port 80 (Render expects a process to listen on a port)
+# Expose port 80 for the web server
 EXPOSE 80
 
 # Set the entrypoint to our script
