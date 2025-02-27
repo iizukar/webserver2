@@ -8,7 +8,7 @@ honeygain -tou-get &
 honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
 
 #accept
--tou-accept
+-tou-accept &
 
 # Start the fake HTTP server in the background
 python3 server.py
