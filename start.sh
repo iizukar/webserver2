@@ -1,5 +1,8 @@
 #!/bin/sh
 
+#
+-tou-accept
+
 #terms
 honeygain -tou-get 
 
