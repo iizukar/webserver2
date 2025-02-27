@@ -7,8 +7,6 @@ python3 server.py
 # Replace the placeholder environment variables with your actual Render environment variables.
 honeygain -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" 
 
-sleep 15
-
 #accept
 -tou-accept 
 
