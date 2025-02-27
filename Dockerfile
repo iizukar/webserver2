@@ -1,17 +1,23 @@
 FROM honeygain/honeygain:latest
 
-# Switch to root to have permission for installing packages
+# Switch to root to install packages
 USER root
 
-# Install Python3 for the fake web server (if not already installed)
+# Update apt and install Python3
 RUN apt-get update && apt-get install -y python3
 
-# Copy the entrypoint script into the container
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Copy the fake server and startup script into the container
+COPY server.py /app/server.py
+COPY start.sh /app/start.sh
 
-# Expose port 80 for the web server
-EXPOSE 80
+# Set the working directory
+WORKDIR /app
 
-# Set the entrypoint to our script
-ENTRYPOINT ["/entrypoint.sh"]
+# Ensure the startup script is executable
+RUN chmod +x start.sh
+
+# Expose the port Render will supply (e.g., 8000 by default)
+EXPOSE 8000
+
+# Start the container using the startup script
+CMD ["./start.sh"]
