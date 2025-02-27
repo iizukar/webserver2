@@ -1,0 +1,13 @@
+#!/usr/bin/expect -f
+set timeout -1
+# Spawn Honeygain with the required parameters, reading environment variables
+spawn honeygain -tou-accept -email $env(ACCOUNT_EMAIL) -pass $env(ACCOUNT_PASSWORD) -device $env(DEVICE_NAME)
+
+# Wait for the prompt that requests Terms acceptance and send the required response
+expect {
+    -re ".*please accept Terms of Use.*" {
+         send "-tou-accept\r"
+         exp_continue
+    }
+    eof
+}
