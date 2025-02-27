@@ -1,6 +1,6 @@
 #!/bin/sh
-# Start the fake HTTP server in the background to satisfy Render's requirement
+# Start the fake HTTP server in the background
 python3 server.py &
 
-# Use the 'yes' command to continuously send "-tou-accept" so that if an interactive prompt appears, it receives the input.
-yes "-tou-accept" | honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME"
+# Run the Expect script to launch Honeygain and handle interactive prompt
+expect accept_terms.exp
