@@ -4,4 +4,5 @@ python3 server.py &
 
 # Run Honeygain with your command-line parameters.
 # Replace the placeholder environment variables with your actual Render environment variables.
-honeygain -tou-accept -email $ACCOUNT_EMAIL -pass $ACCOUNT_PASSWORD -device $DEVICE_NAME
+honeygain/honeygain -tou-accept -email $ACCOUNT_EMAIL -pass $ACCOUNT_PASSWORD -device $DEVICE_NAME
+
