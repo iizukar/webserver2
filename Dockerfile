@@ -1,19 +1,20 @@
-FROM honeygain/honeygain:latest
+# Use the Honeygain image as the base
+FROM honeygain/honeygain
 
-# Switch to root to install required packages (Python3 and expect)
-USER root
-RUN apt-get update && apt-get install -y python3 expect
+# (Optional) Set default environment variables; these can be overridden on Render
+ENV ACCOUNT_EMAIL=your_email@example.com
+ENV ACCOUNT_PASSWORD=your_password
+ENV DEVICE_NAME=your_device_name
 
-WORKDIR /app
+# Install Python3 for the fake web server (if not already installed)
+RUN apt-get update && apt-get install -y python3
 
-# Copy our scripts into the container
-COPY server.py /app/server.py
-COPY start.sh /app/start.sh
-COPY accept_terms.exp /app/accept_terms.exp
+# Copy the entrypoint script into the container
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Ensure the scripts are executable
-RUN chmod +x start.sh accept_terms.exp
+# Expose port 80 (Render expects a process to listen on a port)
+EXPOSE 80
 
-EXPOSE 8000
-
-CMD ["./start.sh"]
+# Set the entrypoint to our script
+ENTRYPOINT ["/entrypoint.sh"]
