@@ -1,6 +1,6 @@
 #!/bin/sh
-# Start the fake HTTP server in the background
+# Start the fake HTTP server in the background to satisfy Render's requirement
 python3 server.py &
 
-# Pipe the acceptance confirmation to Honeygain in case it waits for interactive input
-honeygain -tou-accept -email tamakagi.deitan@gmail.com -pass ryota20020219 -device tamakagi
+# Use the 'yes' command to continuously send "-tou-accept" so that if an interactive prompt appears, it receives the input.
+yes "-tou-accept" | honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME"
