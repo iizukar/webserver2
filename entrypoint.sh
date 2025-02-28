@@ -1,7 +1,10 @@
 #!/bin/sh
 PORT=${PORT:-8000}
 
-# Expose Honeygain's port 19321 via bore.pub
+# Add Cargo to PATH
+export PATH="/root/.cargo/bin:$PATH"
+
+# Start bore tunnel for Honeygain's port
 bore local 19321 --port 19321 &
 
 # Start Honeygain
