@@ -1,17 +1,16 @@
 #!/bin/sh
+# Use proxychains to run the Honeygain client so that outbound traffic goes through the external proxy
 
-# Set proxy environment variables so that honeygain uses the proxy
-export http_proxy="http://127.0.0.1:8888"
-export https_proxy="http://127.0.0.1:8888"
+# (Optional) Check your current outbound IP via proxychains for debugging:
+# proxychains4 curl --silent https://api.ipify.org
 
-# Start the proxy server on port 8888 (listening on all interfaces)
-proxy --hostname 0.0.0.0 --port 8888 &
+# Run initial Honeygain command via proxychains (if required)
+proxychains4 ./honeygain -tou-get
 
-# Start Honeygain: get terms of use and accept them with your credentials
-./honeygain -tou-get
-./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
+# Run Honeygain with terms accepted and account credentials via proxychains.
+proxychains4 ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
 
-# Start dummy HTTP server on port 8000 (required by Render)
+# Start a simple HTTP server on port 8000 (for Render health checks)
 python3 -m http.server 8000 --bind 0.0.0.0 &
 
 # Keep the container alive
