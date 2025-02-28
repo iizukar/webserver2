@@ -1,24 +1,17 @@
 #!/bin/sh
 
-# Scrape proxies and update configuration
-python3 /scrape_proxies.py
+# Start cron service
+service cron start
 
-# Add scraped proxies to proxychains config
-if [ -f "/proxies.txt" ]; then
-    echo "[ProxyList]" >> /etc/proxychains.conf
-    while IFS= read -r line; do
-        ip=$(echo "$line" | cut -d: -f1)
-        port=$(echo "$line" | cut -d: -f2)
-        echo "http $ip $port" >> /etc/proxychains.conf
-    done < /proxies.txt
-fi
+# Initial proxy configuration
+/update_proxies.sh
 
 # Start Honeygain through proxychains
 proxychains ./honeygain -tou-get
 proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
 
-# Start dummy HTTP server on port 8000
+# Start dummy HTTP server
 python3 -m http.server 8000 --bind 0.0.0.0 &
 
-# Keep the container alive
+# Keep container alive
 tail -f /dev/null
