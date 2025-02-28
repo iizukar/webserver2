@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  honeygain:
+    build: .
+    environment:
+      - HG_EMAIL=${HG_EMAIL}
+      - HG_PASSWORD=${HG_PASSWORD}
+      - HG_DEVICE_NAME=${HG_DEVICE_NAME}
+    restart: unless-stopped
