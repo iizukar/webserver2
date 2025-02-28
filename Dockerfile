@@ -1,25 +1,23 @@
 FROM honeygain/honeygain
 
-# Switch to root to avoid permission issues
 USER root
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip proxychains curl
-
-# Install Python libraries for scraping
-RUN pip3 install requests beautifulsoup4
+    apt-get install -y proxychains curl cron
 
 # Copy configuration and scripts
 COPY entrypoint.sh /entrypoint.sh
-COPY scrape_proxies.py /scrape_proxies.py
+COPY update_proxies.sh /update_proxies.sh
 COPY proxychains.conf /etc/proxychains.conf
 
-# Set permissions
-RUN chmod +x /entrypoint.sh
+# Set up cron job (runs at :00 every hour)
+RUN echo "0 * * * * root /update_proxies.sh > /proc/1/fd/1 2>&1" > /etc/cron.d/proxy-update && \
+    chmod 0644 /etc/cron.d/proxy-update
 
-# Explicitly expose port 8000 (required by Render)
+# Set permissions
+RUN chmod +x /entrypoint.sh /update_proxies.sh
+
 EXPOSE 8000
 
-# Entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
