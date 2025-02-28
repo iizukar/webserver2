@@ -6,9 +6,12 @@ service cron start
 # Initial proxy list download
 /update_proxies.sh
 
+# Start HTTP server in background
+nohup python3 -m http.server 8000 --bind 0.0.0.0 > /tmp/http.log 2>&1 &
+
 # Main loop
 while true; do
-    # Read proxies without mapfile
+    # Read proxies
     proxies=()
     while IFS= read -r line; do
         proxies+=("$line")
@@ -37,7 +40,7 @@ while true; do
         else
             # If working, keep using this proxy
             while sleep 30; do
-                if ! pgrep honeygain > /dev/null; then
+                if ! pgrep -x "honeygain" > /dev/null; then
                     echo "Process died - restarting proxy cycle"
                     break
                 fi
@@ -45,7 +48,7 @@ while true; do
         fi
         
         # Cleanup
-        pkill honeygain || true
+        pkill -x "honeygain" || true
         rm -f /tmp/honeygain.log
     done
 done
