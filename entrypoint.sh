@@ -1,17 +1,13 @@
 #!/bin/sh
-# Use proxychains to run the Honeygain client so that outbound traffic goes through your external PHP proxy
+# Use Render's injected PORT variable, default to 8000 if not set
+PORT=${PORT:-8000}
 
-# (Optional) Check current outbound IP using proxychains:
-# proxychains curl --silent https://api.ipify.org
+# Start Honeygain (ensure variables are set in Render's environment)
+./honeygain -tou-get
+./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
 
-# Run initial Honeygain command via proxychains (if needed)
-proxychains ./honeygain -tou-get
+# Start HTTP server on the assigned port
+python3 -m http.server $PORT --bind 0.0.0.0 &
 
-# Run Honeygain with terms accepted and account credentials via proxychains
-proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
-
-# Start a dummy HTTP server on port 8000 (for Render health checks)
-python3 -m http.server 8000 --bind 0.0.0.0 &
-
-# Keep the container alive
+# Keep the container running
 tail -f /dev/null
