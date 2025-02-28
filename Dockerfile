@@ -2,9 +2,9 @@ FROM honeygain/honeygain
 
 USER root
 
-# Install dependencies (add bash)
+# Install dependencies including procps for pgrep/pkill
 RUN apt-get update && \
-    apt-get install -y proxychains curl cron jq bash
+    apt-get install -y proxychains curl cron jq bash procps python3
 
 # Copy configuration and scripts
 COPY entrypoint.sh /entrypoint.sh
@@ -18,6 +18,7 @@ RUN echo "0 * * * * root /update_proxies.sh" > /etc/cron.d/proxy-update && \
 # Set permissions
 RUN chmod +x /entrypoint.sh /update_proxies.sh
 
+# Explicitly expose and bind to port 8000
 EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]
