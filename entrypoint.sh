@@ -1,5 +1,5 @@
 #!/bin/sh
 # Fetch Terms of Use (non-interactive)
--tou-get
+./honeygain -tou-get
 # Accept Terms of Use and start Honeygain
--tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME"
+./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME"
