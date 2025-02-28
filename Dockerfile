@@ -3,10 +3,10 @@ FROM honeygain/honeygain
 # Switch to root to avoid permission issues
 USER root
 
-# Install Python3 and proxychains (assuming a Debian/Ubuntu–based image)
+# Install Python3 and proxychains (assumes Debian/Ubuntu base)
 RUN apt-get update && apt-get install -y python3 proxychains
 
-# Copy the custom proxychains configuration file into the container
+# Copy our custom proxychains configuration file into the container
 COPY proxychains.conf /etc/proxychains.conf
 
 # Copy entrypoint.sh and set executable permissions
