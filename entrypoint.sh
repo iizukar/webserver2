@@ -32,7 +32,7 @@ while true; do
         echo "Trying proxy: $ip:$port"
         
         # Start Honeygain with timeout
-        timeout 60s proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" > /tmp/honeygain.log 2>&1
+        timeout 5s proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" > /tmp/honeygain.log 2>&1
         
         # Check for errors
         if grep -q -E "NETWORK_ERROR|CONNECTION_FAILED|RESIDENTIAL_CHECK_FAILED" /tmp/honeygain.log; then
