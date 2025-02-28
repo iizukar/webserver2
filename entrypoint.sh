@@ -1,27 +1,24 @@
 #!/bin/sh
 
-# Start Tor service
-tor -f /etc/tor/torrc &
+# Scrape proxies and update configuration
+python3 /scrape_proxies.py
 
-# Wait for Tor to initialize (15-30 seconds)
-echo "Waiting for Tor to start..."
-sleep 30
-
-# Verify Tor connection (optional)
-curl --socks5-hostname localhost:9050 -s https://check.torproject.org/ | grep -q "Congratulations"
-if [ $? -eq 0 ]; then
-    echo "Tor connection successful!"
-else
-    echo "Tor connection failed!"
-    exit 1
+# Add scraped proxies to proxychains config
+if [ -f "/proxies.txt" ]; then
+    echo "[ProxyList]" >> /etc/proxychains.conf
+    while IFS= read -r line; do
+        ip=$(echo "$line" | cut -d: -f1)
+        port=$(echo "$line" | cut -d: -f2)
+        echo "http $ip $port" >> /etc/proxychains.conf
+    done < /proxies.txt
 fi
 
-# Start Honeygain through Tor
-torsocks ./honeygain -tou-get
-torsocks ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
+# Start Honeygain through proxychains
+proxychains ./honeygain -tou-get
+proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" &
 
-# Start dummy HTTP server
+# Start dummy HTTP server on port 8000
 python3 -m http.server 8000 --bind 0.0.0.0 &
 
-# Keep container alive
+# Keep the container alive
 tail -f /dev/null
