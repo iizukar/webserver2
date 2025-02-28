@@ -3,13 +3,15 @@ FROM honeygain/honeygain
 # Switch to root to avoid permission issues
 USER root
 
-# Copy and set executable permissions for the entrypoint script
+# Install Python (if the base image uses Debian/Ubuntu)
+RUN apt-get update && apt-get install -y python3
+
+# Copy and set executable permissions
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Install a tiny HTTP server (to bind to a port)
-RUN apt-get update && apt-get install -y python3
-EXPOSE 8000  # Dummy port for Render
+# Explicitly expose port 8000 (required by Render)
+EXPOSE 8000
 
-# Start Honeygain and the HTTP server
+# Entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
