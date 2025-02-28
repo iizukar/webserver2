@@ -1,19 +1,22 @@
 FROM honeygain/honeygain
 
+# Switch to root for package installation
 USER root
 
-# Install Python + Dependencies
-RUN apt-get update && apt-get install -y python3 wget unzip
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y python3 tor torsocks curl
 
-# Download and install Localtonet
-RUN wget https://localtonet.com/download/localtonet-linux-x64.zip -O localtonet.zip && \
-    unzip localtonet.zip -d /usr/local/bin && \
-    chmod +x /usr/local/bin/localtonet && \
-    rm localtonet.zip
+# Configure Tor
+RUN echo "ExitPolicy reject *:*" >> /etc/tor/torrc && \
+    echo "SocksPort 0.0.0.0:9050" >> /etc/tor/torrc
 
+# Copy files and set permissions
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 8000
+# Expose required ports
+EXPOSE 8000 9050
 
+# Entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
