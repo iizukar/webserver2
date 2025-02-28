@@ -1,8 +1,8 @@
 #!/bin/sh
 PORT=${PORT:-8000}
 
-# Forward Honeygain's port 19321 via Serveo SSH tunnel
-ssh -o StrictHostKeyChecking=no -N -R 0:localhost:19321 serveo.net 2>&1 | grep "Forwarding" &
+# Expose Honeygain's port 19321 via bore.pub
+bore local 19321 --port 19321 &
 
 # Start Honeygain
 ./honeygain -tou-get
