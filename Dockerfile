@@ -2,8 +2,9 @@ FROM honeygain/honeygain
 
 USER root
 
-# Install Python + SSH client for Serveo
-RUN apt-get update && apt-get install -y python3 openssh-client
+# Install Python and bore (Rust tool)
+RUN apt-get update && apt-get install -y python3 cargo && \
+    cargo install bore-cli
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
