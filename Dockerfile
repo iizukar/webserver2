@@ -3,19 +3,18 @@ FROM honeygain/honeygain
 # Switch to root to avoid permission issues
 USER root
 
-# Install python3 and pip
-RUN apt-get update && apt-get install -y python3 python3-pip
+# Install Python3 and proxychains (assuming a Debian/Ubuntu–based image)
+RUN apt-get update && apt-get install -y python3 proxychains
 
-# Install proxy.py via pip
-RUN pip3 install proxy.py
+# Copy the custom proxychains configuration file into the container
+COPY proxychains.conf /etc/proxychains.conf
 
-# Copy and set executable permissions for your entrypoint script
+# Copy entrypoint.sh and set executable permissions
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Explicitly expose port 8000 (for your dummy HTTP server) and port 8888 (for the proxy)
+# Explicitly expose port 8000 (required by Render for health checks)
 EXPOSE 8000
-EXPOSE 8888
 
-# Entrypoint script
+# Set the entrypoint to our custom script
 ENTRYPOINT ["/entrypoint.sh"]
