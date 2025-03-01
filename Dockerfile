@@ -1,18 +1,18 @@
-FROM honeygain/honeygain
+FROM bitping/bitpingd:latest
 
 USER root
 
-# Install dependencies
-RUN apt-get update && \
-    apt-get install -y python3
+# Install Python for dummy server (adjust based on base image)
+RUN if ! command -v python3 >/dev/null; then \
+      (apt-get update && apt-get install -y python3) || (apk add --no-cache python3); \
+    fi
 
-# Copy configuration
+# Create dummy content directory
+RUN mkdir /dummy
+COPY index.html /dummy/index.html
+
+# Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
-COPY proxychains.conf /etc/proxychains.conf
-
-# Set permissions
 RUN chmod +x /entrypoint.sh
-
-EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]
