@@ -2,7 +2,7 @@ FROM honeygain/honeygain
 
 USER root
 
-# Install minimal dependencies
+# Install dependencies
 RUN apt-get update && \
     apt-get install -y proxychains curl cron procps python3
 
