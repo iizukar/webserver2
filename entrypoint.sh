@@ -1,12 +1,19 @@
 #!/bin/bash
 
-# Start required services
+# Start cron service
 service cron start
-python3 -m http.server 8000 --bind 0.0.0.0 > /dev/null 2>&1 &
+
+# Start HTTP server in background
+python3 -m http.server 8000 --bind 0.0.0.0 > /tmp/http.log 2>&1 &
+
+# Initialize Honeygain
+echo "Initializing Honeygain..."
+./honeygain -tou-get > /dev/null 2>&1
+./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" > /tmp/hg-init.log 2>&1
 
 # Main proxy rotation loop
 while true; do
-    # Get fresh proxies (format: IP:PORT)
+    # Get fresh proxies
     mapfile -t proxies < <(grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}' /proxies.txt 2>/dev/null)
     
     for proxy in "${proxies[@]}"; do
@@ -24,20 +31,16 @@ while true; do
 
         echo "Attempting proxy: $ip:$port"
         
-        # Start Honeygain with short timeout
-        timeout 30s proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" > /tmp/hg.log 2>&1
+        # Start Honeygain in foreground
+        timeout 60s proxychains ./honeygain -tou-accept -email "$ACCOUNT_EMAIL" -pass "$ACCOUNT_PASSWORD" -device "$DEVICE_NAME" >> /tmp/hg.log 2>&1
         
-        # Check for immediate failures
-        if grep -q -E "NETWORK_ERROR|UNABLE_TO_CONNECT|RESIDENTIAL_CHECK" /tmp/hg.log; then
-            echo "Failed proxy: $ip:$port"
-            continue
-        else
-            # Keep using working proxy until failure
-            while true; do
-                sleep 15
-                if ! pgrep -x honeygain > /dev/null || grep -q -E "NETWORK_ERROR|DISCONNECTED" /tmp/hg.log; then
+        # Check if process stayed running
+        if ! grep -q "Connection closed" /tmp/hg.log; then
+            echo "Proxy working - maintaining connection"
+            # Keep alive until failure
+            while sleep 30; do
+                if ! pgrep -x honeygain > /dev/null; then
                     echo "Connection lost, rotating proxy..."
-                    pkill -x honeygain
                     break
                 fi
             done
